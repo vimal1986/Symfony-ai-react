@@ -5,7 +5,9 @@ function FileUpload() {
 
     const [file, setFile] = useState('');
     const [data, getFile] = useState({ name: "", path: "" });
+    const [response,setResponse] = useState([])
     const [progress, setProgess] = useState(0);
+    const [ countData,setCountData ] = useState(1)
     const el = useRef();
 
     const handleChange = (e) => {
@@ -14,6 +16,8 @@ function FileUpload() {
         console.log(file);
         setFile(file)
     }
+
+    const textChange = e => setCountData(e.target.value)
 
     const uploadFile = () => {
         const formData = new FormData();
@@ -24,8 +28,8 @@ function FileUpload() {
                 setProgess(progress)
             }
         }).then(res => {
-            console.log(res);
-            getFile({ name: res.data.name, path: 'http://localhost:4500' + res.data.path })
+            console.log(res.data.data);
+            setResponse(res.data.data)
             // el.current.value = "";
         }).catch(err => console.log(err))
     }
@@ -37,9 +41,24 @@ function FileUpload() {
                 <div className="progessBar" style={{ width: progress }}>{progress}</div>
                 <button onClick={uploadFile} className="upbutton">upload</button>
             </div>
-            <hr />
-            {data.path && <div><textarea value={data.path} onChange={uploadFile} /></div>}
-            {data.path && <img src={data.path} alt={data.name} />}
+            <div>
+                <input value={countData} type="text" onChange={textChange}/>
+            </div>
+            <table>
+                <tbody>
+                    { response.length > 0 && response.slice(0,countData).map(data => {
+                        return(
+                            <tr>
+                                {
+                                    data.split('|').map( item => <td>{item}</td>)
+                                }
+
+                            </tr>    
+                        )
+                    }) }
+                </tbody>    
+            </table>
+           
 
         </div>
     );
